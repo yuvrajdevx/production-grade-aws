@@ -1,30 +1,30 @@
 resource "aws_s3_bucket" "tf_state" {
-    bucket = "yuvraj-tfstate-2026"
+  bucket = "yuvraj-tfstate-2026"
 }
 
 resource "aws_s3_bucket_versioning" "tf_state" {
-    bucket = aws_s3_bucket.tf_state.id
-    versioning_configuration {
-        status = "Enabled"
-    }
+  bucket = aws_s3_bucket.tf_state.id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state" {
-    bucket = aws_s3_bucket.tf_state.id
-    rule {
-        apply_server_side_encryption_by_default {
-            sse_algorithm = "AES256"
-        }
+  bucket = aws_s3_bucket.tf_state.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
+  }
 }
 
 resource "aws_dynamodb_table" "tf_state_lock" {
-    name         = "yuvraj-tfstate-lock-2026"
-    billing_mode = "PAY_PER_REQUEST"
-    hash_key     = "LockID"
+  name         = "yuvraj-tfstate-lock-2026"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
 
-    attribute {
-        name = "LockID"
-        type = "S"
-    }
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
 }
