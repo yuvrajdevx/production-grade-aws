@@ -1,4 +1,3 @@
-# Read the shared VPC's outputs from network/'s remote state.
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
