@@ -26,7 +26,7 @@ jobs:
 
       - name: Terraform validate
         run: |
-          for dir in bootstrap network prod modules/vpc modules/eks; do
+          for dir in bootstrap network prod nonprod shared-svcs modules/vpc modules/eks; do
             echo "==> validating $dir"
             terraform -chdir="$dir" init -backend=false -input=false
             terraform -chdir="$dir" validate

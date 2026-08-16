@@ -1,3 +1,4 @@
+# Read the shared VPC's outputs from network/'s remote state.
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
@@ -10,7 +11,7 @@ data "terraform_remote_state" "network" {
 module "eks" {
   source = "../modules/eks"
 
-  name_prefix        = "prod"
+  name_prefix        = "shared"
   kubernetes_version = var.kubernetes_version
 
   private_subnet_ids = data.terraform_remote_state.network.outputs.private_subnet_ids
