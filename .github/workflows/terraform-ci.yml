@@ -71,14 +71,17 @@ jobs:
           tflint_version: latest
 
       - name: Init tflint (download AWS ruleset plugin)
-        # Pass --config so tflint finds .tflint.hcl at the repo root regardless
-        # of which subdirectory we lint.
+        # Use the root config for init so the AWS plugin is always downloaded.
         run: tflint --init --config="$GITHUB_WORKSPACE/.tflint.hcl"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Run tflint
-        run: tflint --format=compact --config="$GITHUB_WORKSPACE/.tflint.hcl"
+        # No --config here: tflint walks up from the working directory and picks
+        # the nearest .tflint.hcl. Environment roots get the root config (AWS
+        # plugin enabled); modules get modules/.tflint.hcl (AWS plugin disabled,
+        # since modules don't declare providers — that's the root caller's job).
+        run: tflint --format=compact
         working-directory: ${{ matrix.dir }}
 
   checkov:
@@ -107,10 +110,9 @@ jobs:
 
       - name: Run checkov (advisory — findings logged, non-blocking)
         # --soft-fail makes checkov exit 0 even when findings exist.
-        # This keeps checkov informational: every finding is visible in the CI
-        # log, but known intentional trade-offs (single NAT GW, no VPC flow
-        # logs, EKS public endpoint) don't block merges.
-        # Remove --soft-fail and add --skip-check CKV_... lines to harden later.
+        # Known intentional trade-offs (single NAT GW, no VPC flow logs,
+        # EKS public endpoint) are logged but do not block merges.
+        # To harden: remove --soft-fail and add --skip-check CKV_... lines.
         run: |
           checkov \
             --directory ${{ matrix.dir }} \
